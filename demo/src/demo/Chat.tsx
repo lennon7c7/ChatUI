@@ -1,18 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import Chat, {
-  MessageProps,
-  useMessages,
-  ToolbarItemProps,
-
-} from '../../../src';
+import {useNavigate} from 'react-router-dom';
+import Chat, {MessageProps, ToolbarItemProps, useMessages,} from '../../../src';
 
 type MessageWithoutId = Omit<MessageProps, '_id'>;
 
 const initialMessages: MessageWithoutId[] = [
   {
     type: 'system',
-    content: { text: 'SHOPPAAS专属智能客服 为您服务' },
+    content: {text: 'SHOPPAAS专属智能客服 为您服务'},
   },
   {
     type: 'text',
@@ -47,7 +42,7 @@ export default () => {
       // TODO: 发送请求
       appendMsg({
         type: 'text',
-        content: { text: val },
+        content: {text: val},
         position: 'right',
       });
 
@@ -55,13 +50,21 @@ export default () => {
       //   setTyping(true);
       // }, 1000);
 
-      // 模拟回复消息
-      setTimeout(() => {
-        appendMsg({
-          type: 'text',
-          content: { text: '亲，您遇到什么问题啦？请简要描述您的问题~' },
-        });
-      }, 1500);
+      fetch(window.location.origin + '/aichat/qa?question=' + val)
+          .then(response => response.json())
+          .then(result => {
+            appendMsg({
+              type: 'text',
+              content: {text: result.msg},
+            });
+          })
+          .catch(error => {
+            console.log('error', error)
+            appendMsg({
+              type: 'text',
+              content: {text: '出问题了，请重新提问'},
+            });
+          });
     }
   }
 
